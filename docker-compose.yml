@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
+      - DOCKERHUB_USERNAME=${{ secrets.gabriendres }}
+      - DOCKERHUB_TOKEN=${{ dckr_pat_iKUbcpSWgl_6iPUBF5O4iybVWGA }}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=gabriendres
+      - POSTGRES_PASSWORD=yentrevista123
+      - POSTGRES_DB=entrevista
