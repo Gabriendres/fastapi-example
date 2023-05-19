@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run unit tests
+      run: python -m unittest discover tests
+
+    - name: Static code analysis
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_PROJECT_KEY: sonar.issues.defaultAssigneeLogin
+        SONAR_ORGANIZATION: gabriendres2025
+
+    - name: Build Docker image
+      run: docker build -t gabriendres/myapp:${{ github.sha }} .
+
+    - name: Log in to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: gabriendres
+        password: ${{ dckr_pat_iKUbcpSWgl_6iPUBF5O4iybVWGA }}
+
+    - name: Push Docker image
+      run: docker push gabriendres/myapp:${{ github.sha }}
